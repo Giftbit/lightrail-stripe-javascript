@@ -1,7 +1,7 @@
 import {Transaction} from "lightrail-client/dist/model";
-import {charges} from "stripe";
+import * as stripe from "stripe";
 
 export interface StripeLightrailSplitTenderCharge {
     lightrailTransaction: Transaction;
-    stripeCharge: charges.ICharge;
+    stripeThing: stripe.charges.ICharge;
 }
