@@ -8,36 +8,38 @@ import {CreateTransactionParams} from "lightrail-client/dist/params";
 import {Card, Contact} from "lightrail-client/dist/model";
 //require('dotenv').config();
 
+const stripeAPIKey= "";//process.env.STRIPE_SECRET_KEY
+const lightrailAPIKey = ""; //process.env.LIGHTRAIL_API_KEY
+const lightrailShopperId= "alice"; //process.env.LIGHTRAIL_SHOPPER_ID
+const stripeTestToken= "tok_visa"; //process.env.STRIPE_TEST_TOKEN
+
+const stripe = require("stripe")(
+    stripeAPIKey
+);
+
 const splitTenderChargeParams = {
     userSuppliedId: uuid(),
     currency: 'USD',
     amount: 1000,
-    shopperId: 'alice',
-    source: 'tok_visa'
+    shopperId: lightrailShopperId,
+    source: stripeTestToken
 };
 
 const lightrailOnlyParams = {
     userSuppliedId: uuid(),
     currency: 'USD',
     amount: 450,
-    shopperId: 'alice',
+    shopperId: lightrailShopperId,
 };
 
 const stripeOnlyParams = {
     userSuppliedId: uuid(),
     currency: 'USD',
     amount: 1200,
-    source: 'tok_visa'
+    source: stripeTestToken
 };
 
 const lightrailShare = 450;
-const stripeShare = 1200;
-
-const stripe = require("stripe")(
-    ""
-    // apiKey: process.env.STRIPE_SECRET_KEY,
-);
-
 
 describe("stripeLightrailSplitTenderTransactions", () => {
     before(() => {
@@ -75,6 +77,8 @@ describe("stripeLightrailSplitTenderTransactions", () => {
         });
 
         it("posts a charge to Lightrail only", (done) => {
+
+            //todo: balance check the card and adjust the amount of the transaction to be less than that to make this test repeatable.
             lightrailSplitTender.createSplitTenderCharge(lightrailOnlyParams, lightrailShare, stripe)
                 .then((res) => {
                     chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
@@ -88,7 +92,7 @@ describe("stripeLightrailSplitTenderTransactions", () => {
         it("posts a charge to Stripe only", (done) => {
             lightrailSplitTender.createSplitTenderCharge(stripeOnlyParams, 0, stripe)
                 .then((res) => {
-                    chai.assert.equal(res.stripeCharge.amount, stripeShare);
+                    chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount );
                 })
                 .then(() => {
                     done();
