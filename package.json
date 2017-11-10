@@ -13,7 +13,7 @@
     "clean": "rimraf ./dist",
     "lint": "tslint --project tsconfig.json",
     "prepublishOnly": "npm run clean && npm run build && npm run lint && npm run test",
-    "test": "mocha --recursive --throw-deprecation --require ts-node/register \"src/**/*.test.ts\""
+    "test": "mocha --timeout 5000 --recursive --throw-deprecation --require ts-node/register \"src/**/*.test.ts\""
   },
   "keywords": [
     "lightrail",
@@ -29,12 +29,16 @@
     "url": "https://github.com/Giftbit/lightrail-client-javascript/issues"
   },
   "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.44",
     "@types/superagent": "^3.5.6",
     "@types/typescript": "^2.0.0",
+    "chai": "^4.1.2",
     "typescript-eslint-parser": "^8.0.1"
   },
   "dependencies": {
     "lightrail-client": "0.0.9",
-    "stripe": "^5.3.0"
+    "stripe": "^5.3.0",
+    "uuid": "^3.1.0"
   }
 }

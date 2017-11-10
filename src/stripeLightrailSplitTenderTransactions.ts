@@ -1,5 +1,4 @@
 import * as lightrail from "lightrail-client";
-import Stripe from "stripe";
 
 import {StripeLightrailSplitTenderCharge} from "./model/StripeLightrailSplitTenderCharge";
 import {CreateSplitTenderChargeParams} from "./model/CreateSplitTenderChargeParams";
@@ -13,19 +12,21 @@ interface StripeParams {
     metadata?: object;
 }
 
-export async function createSplitTenderCharge(params: CreateSplitTenderChargeParams, lightrailShare: number): Promise<StripeLightrailSplitTenderCharge> {
+export async function createSplitTenderCharge(params: CreateSplitTenderChargeParams, lightrailShare: number, stripeObject: any): Promise<StripeLightrailSplitTenderCharge> {
     if (!params) {
         throw new Error("params not set");
     } else if (!params.userSuppliedId) {
         throw new Error("params.userSuppliedId not set");
     }
     //
+
     let splitTenderCharge: StripeLightrailSplitTenderCharge = {
         lightrailTransaction: null,
-        stripeThing: null
+        stripeCharge: null
     };
     const stripeShare = params.amount - lightrailShare;
-    let stripeParameters: StripeParams = {amount: stripeShare,
+    let stripeParameters: StripeParams = {
+        amount: stripeShare,
         currency: params.currency
     };
     if (params.source) {
@@ -35,7 +36,11 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
     }
 
     if (lightrailShare > 0) {
-        const card = await lightrail.cards.getCardByUserSuppliedId(params.shopperId);
+        const contact = await lightrail.contacts.getContactByUserSuppliedId(params.shopperId);
+        const card = await lightrail.cards.getAccountCardByContactAndCurrency(contact, params.currency);
+        if (!card) {
+            throw "No " + params.currency + " card found for shpperId '" + params.shopperId +"'.";
+        }
         let lightrailTransactionParameters: CreateTransactionParams = {
             value: 0 - lightrailShare,
             currency: params.currency,
@@ -48,7 +53,7 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
 
         if (stripeShare) {
             try {
-                splitTenderCharge.stripeThing = await Stripe.charges.create(stripeParameters, {idempotency_key: params.userSuppliedId});
+                splitTenderCharge.stripeCharge = await stripeObject.charges.create(stripeParameters, {idempotency_key: params.userSuppliedId});
                 splitTenderCharge.lightrailTransaction = await lightrail.cards.transactions.capturePending(card,
                     lightrailPendingTransaction,
                     {userSuppliedId: params.userSuppliedId + "-capture"});
@@ -59,7 +64,7 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
             }
         }
     } else {
-        splitTenderCharge.stripeThing = await Stripe.charges.create(stripeParameters, {idempotency_key: params.userSuppliedId});
+        splitTenderCharge.stripeCharge = await stripeObject.charges.create(stripeParameters, {idempotency_key: params.userSuppliedId});
     }
 
     return splitTenderCharge;
