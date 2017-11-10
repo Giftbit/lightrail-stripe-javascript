@@ -9,7 +9,7 @@ import {Card, Contact} from "lightrail-client/dist/model";
 //require('dotenv').config();
 
 const splitTenderChargeParams = {
-    userSuppliedId: '1234567890',
+    userSuppliedId: '12345678910',
     currency: 'USD',
     amount: 1000,
     shopperId: 'alice',
@@ -21,7 +21,7 @@ const lightrailShare = 450;
 describe("stripeLightrailSplitTenderTransactions", () => {
     before(() => {
         lightrail.configure({
-            apiKey: '...',
+            apiKey: "",
             // apiKey: process.env.LIGHTRAIL_API_KEY,
             restRoot: "https://api.lightrail.com/v1/"
         });
@@ -45,7 +45,7 @@ describe("stripeLightrailSplitTenderTransactions", () => {
     describe("createSplitTenderCharge()", () => {
         it("posts a charge to Lightrail and Stripe", (done) => {
             let stripe = require("stripe")(
-                "..."
+                ""
             );
             lightrailSplitTender.createSplitTenderCharge(splitTenderChargeParams, lightrailShare, stripe)
                 .then((res) => {

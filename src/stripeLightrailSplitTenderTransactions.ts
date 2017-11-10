@@ -50,6 +50,7 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
         };
         const lightrailPendingTransaction =
             await lightrail.cards.transactions.createTransaction(card, lightrailTransactionParameters);
+        splitTenderCharge.lightrailTransaction = lightrailPendingTransaction;
 
         if (stripeShare) {
             try {
