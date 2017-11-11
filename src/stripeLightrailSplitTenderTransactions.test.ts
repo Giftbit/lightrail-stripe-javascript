@@ -44,8 +44,7 @@ const lightrailShare = 450;
 describe("stripeLightrailSplitTenderTransactions", () => {
     before(() => {
         lightrail.configure({
-            apiKey: "",
-            // apiKey: process.env.LIGHTRAIL_API_KEY,
+            apiKey: lightrailAPIKey,
             restRoot: "https://api.lightrail.com/v1/"
         });
     });
@@ -69,6 +68,7 @@ describe("stripeLightrailSplitTenderTransactions", () => {
             lightrailSplitTender.createSplitTenderCharge(splitTenderChargeParams, lightrailShare, stripe)
                 .then((res) => {
                     chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
+                    chai.assert.equal(res.lightrailTransaction.userSuppliedId, splitTenderChargeParams.userSuppliedId + '-capture');
                 })
                 .then(() => {
                     done();
@@ -82,6 +82,7 @@ describe("stripeLightrailSplitTenderTransactions", () => {
             lightrailSplitTender.createSplitTenderCharge(lightrailOnlyParams, lightrailShare, stripe)
                 .then((res) => {
                     chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
+                    chai.assert.equal(res.lightrailTransaction.userSuppliedId, lightrailOnlyParams.userSuppliedId);
                 })
                 .then(() => {
                     done();
@@ -106,6 +107,7 @@ describe("stripeLightrailSplitTenderTransactions", () => {
             lightrailSplitTender.createSplitTenderChargeWithStripeKey(splitTenderChargeParams, lightrailShare, stripeAPIKey)
                 .then((res) => {
                     chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
+                    chai.assert.equal(res.lightrailTransaction.userSuppliedId, splitTenderChargeParams.userSuppliedId + '-capture');
                 })
                 .then(() => {
                     done();
@@ -118,6 +120,7 @@ describe("stripeLightrailSplitTenderTransactions", () => {
             lightrailSplitTender.createSplitTenderChargeWithStripeKey(lightrailOnlyParams, lightrailShare, stripeAPIKey)
                 .then((res) => {
                     chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
+                    chai.assert.equal(res.lightrailTransaction.userSuppliedId, lightrailOnlyParams.userSuppliedId);
                 })
                 .then(() => {
                     done();
