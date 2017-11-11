@@ -92,7 +92,43 @@ describe("stripeLightrailSplitTenderTransactions", () => {
         it("posts a charge to Stripe only", (done) => {
             lightrailSplitTender.createSplitTenderCharge(stripeOnlyParams, 0, stripe)
                 .then((res) => {
-                    chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount );
+                    chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount);
+                })
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+    });
+
+    describe("createSplitTenderChargeWithStripeKey()", () => {
+        it("posts a charge to Lightrail and Stripe", (done) => {
+            lightrailSplitTender.createSplitTenderChargeWithStripeKey(splitTenderChargeParams, lightrailShare, stripeAPIKey)
+                .then((res) => {
+                    chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
+                })
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        it("posts a charge to Lightrail only", (done) => {
+
+            lightrailSplitTender.createSplitTenderChargeWithStripeKey(lightrailOnlyParams, lightrailShare, stripeAPIKey)
+                .then((res) => {
+                    chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
+                })
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        it("posts a charge to Stripe only", (done) => {
+            lightrailSplitTender.createSplitTenderChargeWithStripeKey(stripeOnlyParams, 0, stripeAPIKey)
+                .then((res) => {
+                    chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount);
                 })
                 .then(() => {
                     done();

@@ -14,6 +14,11 @@ interface StripeParams {
     metadata?: { [propertyName: string]: any; };
 }
 
+export async function createSplitTenderChargeWithStripeKey(params: CreateSplitTenderChargeParams, lightrailShare: number, stripeSecretKey: string): Promise<StripeLightrailSplitTenderCharge> {
+    const stripeObject = require("stripe")(stripeSecretKey);
+    return createSplitTenderCharge(params, lightrailShare, stripeObject);
+}
+
 export async function createSplitTenderCharge(params: CreateSplitTenderChargeParams, lightrailShare: number, stripeObject: any): Promise<StripeLightrailSplitTenderCharge> {
     if (!params) {
         throw new Error("params not set");
