@@ -43,8 +43,9 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
             currency: params.currency,
             pending: (stripeShare > 0),
             userSuppliedId: params.userSuppliedId,
-            //todo:
         };
+        lightrailTransactionParameters.metadata = appendSplitTenderMetadataForLightrail(params, null);
+
         const lightrailPendingTransaction =
             await lightrail.cards.transactions.createTransaction(card, lightrailTransactionParameters);
         splitTenderCharge.lightrailTransaction = lightrailPendingTransaction;
@@ -55,11 +56,17 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
                 splitTenderCharge.stripeCharge = await stripeObject.charges.create(stripeParameters, {idempotency_key: params.userSuppliedId});
                 splitTenderCharge.lightrailTransaction = await lightrail.cards.transactions.capturePending(card,
                     lightrailPendingTransaction,
-                    {userSuppliedId: params.userSuppliedId + "-capture"});
+                    {
+                        userSuppliedId: params.userSuppliedId + "-capture",
+                        metadata: appendSplitTenderMetadataForLightrail(params, splitTenderCharge.stripeCharge),
+                    });
             } catch (error) {
                 splitTenderCharge.lightrailTransaction = await lightrail.cards.transactions.voidPending(card,
                     lightrailPendingTransaction,
-                    {userSuppliedId: params.userSuppliedId + "-void"});
+                    {
+                        userSuppliedId: params.userSuppliedId + "-void",
+                        metadata: appendSplitTenderMetadataForLightrail(params, splitTenderCharge.stripeCharge),
+                    });
             }
         }
     } else {
@@ -91,4 +98,16 @@ function splitTenderParamsToStripeParams(splitTenderParams: CreateSplitTenderCha
     paramsForStripe.amount = stripeAmount;
 
     return paramsForStripe;
+}
+
+function appendSplitTenderMetadataForLightrail(splitTenderParams: CreateSplitTenderChargeParams, stripeTransaction: any) {
+    let metadata = splitTenderParams.metadata || {};
+    metadata = Object.assign(metadata, {
+        _split_tender_total: splitTenderParams.amount,
+        _split_tender_partner: 'STRIPE',
+    });
+    if (stripeTransaction) {
+        metadata = Object.assign(metadata, {_split_tender_partner_transaction_id: stripeTransaction.id});
+    }
+    return metadata;
 }
