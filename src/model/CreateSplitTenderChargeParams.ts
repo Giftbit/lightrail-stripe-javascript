@@ -5,5 +5,5 @@ export interface CreateSplitTenderChargeParams {
     shopperId?: string;
     source?: string;
     customer?: string;
-    metadata?: object;
+    metadata?: { [key: string]: any };
 }

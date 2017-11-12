@@ -12,17 +12,27 @@ const stripeAPIKey= "";//process.env.STRIPE_SECRET_KEY
 const lightrailAPIKey = ""; //process.env.LIGHTRAIL_API_KEY
 const lightrailShopperId= "alice"; //process.env.LIGHTRAIL_SHOPPER_ID
 const stripeTestToken= "tok_visa"; //process.env.STRIPE_TEST_TOKEN
+const metadata = {destination: 'test'};
 
 const stripe = require("stripe")(
     stripeAPIKey
 );
 
 const splitTenderChargeParams = {
-    userSuppliedId: uuid(),
+    userSuppliedId: '',  //uuid must be generated in each test that uses this to avoid conflicts
     currency: 'USD',
     amount: 1000,
     shopperId: lightrailShopperId,
     source: stripeTestToken
+};
+
+const splitTenderChargeParamsWithMetadata = {
+    userSuppliedId: '',  //uuid must be generated in each test that uses this to avoid conflicts
+    currency: 'USD',
+    amount: 1000,
+    shopperId: lightrailShopperId,
+    source: stripeTestToken,
+    metadata: Object.assign({}, metadata),
 };
 
 const lightrailOnlyParams = {
@@ -44,8 +54,7 @@ const lightrailShare = 450;
 describe("stripeLightrailSplitTenderTransactions", () => {
     before(() => {
         lightrail.configure({
-            apiKey: "",
-            // apiKey: process.env.LIGHTRAIL_API_KEY,
+            apiKey: lightrailAPIKey,
             restRoot: "https://api.lightrail.com/v1/"
         });
     });
@@ -66,9 +75,24 @@ describe("stripeLightrailSplitTenderTransactions", () => {
 
     describe("createSplitTenderCharge()", () => {
         it("posts a charge to Lightrail and Stripe", (done) => {
+            splitTenderChargeParams.userSuppliedId = uuid();
             lightrailSplitTender.createSplitTenderCharge(splitTenderChargeParams, lightrailShare, stripe)
                 .then((res) => {
                     chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
+                    chai.assert.equal(res.lightrailTransaction.userSuppliedId, splitTenderChargeParams.userSuppliedId + '-capture');
+                })
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        it("appends split tender details to metadata without overwriting it", (done) => {
+            splitTenderChargeParamsWithMetadata.userSuppliedId = uuid();
+            lightrailSplitTender.createSplitTenderCharge(splitTenderChargeParamsWithMetadata, lightrailShare, stripe)
+                .then((res) => {
+                    chai.assert.equal(res.lightrailTransaction.metadata._split_tender_partner_transaction_id, res.stripeCharge.id);
+                    chai.assert.include(res.stripeCharge.metadata, metadata);
                 })
                 .then(() => {
                     done();
@@ -77,11 +101,11 @@ describe("stripeLightrailSplitTenderTransactions", () => {
         });
 
         it("posts a charge to Lightrail only", (done) => {
-
             //todo: balance check the card and adjust the amount of the transaction to be less than that to make this test repeatable.
             lightrailSplitTender.createSplitTenderCharge(lightrailOnlyParams, lightrailShare, stripe)
                 .then((res) => {
                     chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
+                    chai.assert.equal(res.lightrailTransaction.userSuppliedId, lightrailOnlyParams.userSuppliedId);
                 })
                 .then(() => {
                     done();
@@ -92,7 +116,59 @@ describe("stripeLightrailSplitTenderTransactions", () => {
         it("posts a charge to Stripe only", (done) => {
             lightrailSplitTender.createSplitTenderCharge(stripeOnlyParams, 0, stripe)
                 .then((res) => {
-                    chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount );
+                    chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount);
+                })
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+    });
+
+    describe("createSplitTenderChargeWithStripeKey()", () => {
+        it("posts a charge to Lightrail and Stripe", (done) => {
+            splitTenderChargeParams.userSuppliedId = uuid();
+            lightrailSplitTender.createSplitTenderChargeWithStripeKey(splitTenderChargeParams, lightrailShare, stripeAPIKey)
+                .then((res) => {
+                    chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
+                    chai.assert.equal(res.lightrailTransaction.userSuppliedId, splitTenderChargeParams.userSuppliedId + '-capture');
+                    chai.assert.equal(res.lightrailTransaction.metadata._split_tender_partner_transaction_id, res.stripeCharge.id);
+                })
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        it("appends split tender details to metadata without overwriting it", (done) => {
+            splitTenderChargeParamsWithMetadata.userSuppliedId = uuid();
+            lightrailSplitTender.createSplitTenderChargeWithStripeKey(splitTenderChargeParamsWithMetadata, lightrailShare, stripeAPIKey)
+                .then((res) => {
+                    chai.assert.equal(res.lightrailTransaction.metadata._split_tender_partner_transaction_id, res.stripeCharge.id);
+                    chai.assert.include(res.stripeCharge.metadata, metadata);
+                })
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        it("posts a charge to Lightrail only", (done) => {
+            lightrailSplitTender.createSplitTenderChargeWithStripeKey(lightrailOnlyParams, lightrailShare, stripeAPIKey)
+                .then((res) => {
+                    chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
+                    chai.assert.equal(res.lightrailTransaction.userSuppliedId, lightrailOnlyParams.userSuppliedId);
+                })
+                .then(() => {
+                    done();
+                })
+                .catch(done);
+        });
+
+        it("posts a charge to Stripe only", (done) => {
+            lightrailSplitTender.createSplitTenderChargeWithStripeKey(stripeOnlyParams, 0, stripeAPIKey)
+                .then((res) => {
+                    chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount);
                 })
                 .then(() => {
                     done();
