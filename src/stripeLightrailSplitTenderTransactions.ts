@@ -14,17 +14,14 @@ interface StripeParams {
     metadata?: { [propertyName: string]: any; };
 }
 
-export async function createSplitTenderChargeWithStripeKey(params: CreateSplitTenderChargeParams, lightrailShare: number, stripeSecretKey: string): Promise<StripeLightrailSplitTenderCharge> {
-    const stripeObject = require("stripe")(stripeSecretKey);
-    return createSplitTenderCharge(params, lightrailShare, stripeObject);
-}
-
-export async function createSplitTenderCharge(params: CreateSplitTenderChargeParams, lightrailShare: number, stripeObject: any): Promise<StripeLightrailSplitTenderCharge> {
+export async function createSplitTenderCharge(params: CreateSplitTenderChargeParams, lightrailShare: number, stripeParam: object | string): Promise<StripeLightrailSplitTenderCharge> {
     if (!params) {
         throw new Error("params not set");
     } else if (!params.userSuppliedId) {
         throw new Error("params.userSuppliedId not set");
     }
+
+    const stripeObject = getStripeObject(stripeParam);
 
     let splitTenderCharge: StripeLightrailSplitTenderCharge = {
         lightrailTransaction: null,
@@ -111,4 +108,14 @@ function appendSplitTenderMetadataForLightrail(splitTenderParams: CreateSplitTen
     }
 
     return splitTenderParams.metadata;
+}
+
+function getStripeObject(stripeParam: object | string) {
+    if (!stripeParam) {
+        throw new Error("stripeParam not set");
+    } else if (typeof stripeParam === 'object') {
+        return stripeParam;
+    } else if (typeof stripeParam === 'string') {
+        return require("stripe")(stripeParam);
+    }
 }
