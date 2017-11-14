@@ -33,7 +33,7 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
         const contact = await lightrail.contacts.getContactByUserSuppliedId(params.shopperId);
         const card = await lightrail.cards.getAccountCardByContactAndCurrency(contact, params.currency);
         if (!card) {
-            throw "No " + params.currency + " card found for shpperId '" + params.shopperId + "'.";
+            throw new Error(`No ${params.currency} card found for shopperId '${params.shopperId}'.`);
         }
         let lightrailTransactionParameters: CreateTransactionParams = {
             value: 0 - lightrailShare,
@@ -51,14 +51,16 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
             try {
                 let stripeParameters: StripeParams = splitTenderParamsToStripeParams(params, stripeShare, lightrailPendingTransaction);
                 splitTenderCharge.stripeCharge = await stripeObject.charges.create(stripeParameters, {idempotency_key: params.userSuppliedId});
-                splitTenderCharge.lightrailTransaction = await lightrail.cards.transactions.capturePending(card,
+                splitTenderCharge.lightrailTransaction = await lightrail.cards.transactions.capturePending(
+                    card,
                     lightrailPendingTransaction,
                     {
                         userSuppliedId: params.userSuppliedId + "-capture",
                         metadata: appendSplitTenderMetadataForLightrail(params, splitTenderCharge.stripeCharge),
                     });
             } catch (error) {
-                splitTenderCharge.lightrailTransaction = await lightrail.cards.transactions.voidPending(card,
+                splitTenderCharge.lightrailTransaction = await lightrail.cards.transactions.voidPending(
+                    card,
                     lightrailPendingTransaction,
                     {
                         userSuppliedId: params.userSuppliedId + "-void",
