@@ -100,14 +100,15 @@ function splitTenderParamsToStripeParams(splitTenderParams: CreateSplitTenderCha
     return paramsForStripe;
 }
 
-function appendSplitTenderMetadataForLightrail(splitTenderParams: CreateSplitTenderChargeParams, stripeTransaction: any) {
-    let metadata = splitTenderParams.metadata || {};
-    metadata = Object.assign(metadata, {
-        _split_tender_total: splitTenderParams.amount,
-        _split_tender_partner: 'STRIPE',
-    });
-    if (stripeTransaction) {
-        metadata = Object.assign(metadata, {_split_tender_partner_transaction_id: stripeTransaction.id});
+function appendSplitTenderMetadataForLightrail(splitTenderParams: CreateSplitTenderChargeParams, stripeTransaction: any): object {
+    if (!splitTenderParams.metadata) {
+        splitTenderParams.metadata = {};
     }
-    return metadata;
+    splitTenderParams.metadata._split_tender_total = splitTenderParams.amount;
+    splitTenderParams.metadata._split_tender_partner = 'STRIPE';
+    if (stripeTransaction) {
+        splitTenderParams.metadata._split_tender_partner_transaction_id = stripeTransaction.id;
+    }
+
+    return splitTenderParams.metadata;
 }
