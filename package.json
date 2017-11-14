@@ -13,7 +13,7 @@
     "clean": "rimraf ./dist",
     "lint": "tslint --project tsconfig.json",
     "prepublishOnly": "npm run clean && npm run build && npm run lint && npm run test",
-    "test": "mocha --timeout 5000 --recursive --throw-deprecation --require ts-node/register \"src/**/*.test.ts\""
+    "test": "mocha --timeout 5000 --recursive --throw-deprecation --require ts-node/register --require dotenv/config \"src/**/*.test.ts\""
   },
   "keywords": [
     "lightrail",
@@ -34,6 +34,7 @@
     "@types/superagent": "^3.5.6",
     "@types/typescript": "^2.0.0",
     "chai": "^4.1.2",
+    "dotenv": "^4.0.0",
     "typescript-eslint-parser": "^8.0.1"
   },
   "dependencies": {
