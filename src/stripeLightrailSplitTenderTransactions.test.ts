@@ -2,16 +2,14 @@ import * as chai from "chai";
 import * as lightrail from "lightrail-client";
 import {v4 as uuid} from "uuid";
 
-
 import * as lightrailSplitTender from "./stripeLightrailSplitTenderTransactions";
 import {CreateTransactionParams} from "lightrail-client/dist/params";
 import {Card, Contact} from "lightrail-client/dist/model";
-//require('dotenv').config();
 
-const stripeAPIKey= "";//process.env.STRIPE_SECRET_KEY
-const lightrailAPIKey = ""; //process.env.LIGHTRAIL_API_KEY
-const lightrailShopperId= "alice"; //process.env.LIGHTRAIL_SHOPPER_ID
-const stripeTestToken= "tok_visa"; //process.env.STRIPE_TEST_TOKEN
+const stripeAPIKey = process.env.STRIPE_SECRET_KEY;
+const lightrailAPIKey = process.env.LIGHTRAIL_API_KEY;
+const lightrailShopperId = process.env.LIGHTRAIL_SHOPPER_ID;
+const stripeTestToken = "tok_visa";
 const metadata = {destination: 'test'};
 
 const stripe = require("stripe")(
