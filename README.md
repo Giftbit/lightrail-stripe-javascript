@@ -64,7 +64,7 @@ const Stripe = require("stripe")("sk_Ar32o89fe90ger63j");
 
 const splitTenderParams = {
   userSuppliedId:"order-s3xx30",
-  value:-6960,
+  amount:6960,
   currency:"USD",
   metadata: {
     cart: {
