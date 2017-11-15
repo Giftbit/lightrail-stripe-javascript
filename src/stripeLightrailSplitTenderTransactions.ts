@@ -1,10 +1,10 @@
 import * as lightrail from "lightrail-client";
 
-import {StripeLightrailSplitTenderCharge} from "./model/StripeLightrailSplitTenderCharge";
-import {CreateSplitTenderChargeParams} from "./model/CreateSplitTenderChargeParams";
+import {StripeLightrailSplitTenderCharge} from "./params/StripeLightrailSplitTenderCharge";
+import {CreateSplitTenderChargeParams} from "./params/CreateSplitTenderChargeParams";
 import {CreateTransactionParams} from "lightrail-client/dist/params";
 import {Transaction} from "lightrail-client/dist/model";
-import {SimulateSplitTenderChargeParams} from "./model/SimulateSplitTenderChargeParams";
+import {SimulateSplitTenderChargeParams} from "./params/SimulateSplitTenderChargeParams";
 
 interface StripeParams {
     currency: string;
