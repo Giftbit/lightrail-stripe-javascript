@@ -5,8 +5,8 @@ import {v4 as uuid} from "uuid";
 import * as lightrailSplitTender from "./stripeLightrailSplitTenderTransactions";
 import {CreateTransactionParams} from "lightrail-client/dist/params";
 import {Card, Contact} from "lightrail-client/dist/model";
-import {CreateSplitTenderChargeParams} from "./model/CreateSplitTenderChargeParams";
-import {SimulateSplitTenderChargeParams} from "./model/SimulateSplitTenderChargeParams";
+import {CreateSplitTenderChargeParams} from "./params/CreateSplitTenderChargeParams";
+import {SimulateSplitTenderChargeParams} from "./params/SimulateSplitTenderChargeParams";
 
 const stripeAPIKey = process.env.STRIPE_SECRET_KEY;
 const lightrailAPIKey = process.env.LIGHTRAIL_API_KEY;
