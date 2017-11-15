@@ -1,4 +1,5 @@
 import * as chai from "chai";
+import * as chaiAsPromised from "chai-as-promised";
 import * as lightrail from "lightrail-client";
 import {v4 as uuid} from "uuid";
 
@@ -7,6 +8,8 @@ import {CreateTransactionParams} from "lightrail-client/dist/params";
 import {Card, Contact} from "lightrail-client/dist/model";
 import {CreateSplitTenderChargeParams} from "./params/CreateSplitTenderChargeParams";
 import {SimulateSplitTenderChargeParams} from "./params/SimulateSplitTenderChargeParams";
+
+chai.use(chaiAsPromised);
 
 const stripeAPIKey = process.env.STRIPE_SECRET_KEY;
 const lightrailAPIKey = process.env.LIGHTRAIL_API_KEY;
@@ -56,6 +59,7 @@ const simulateSplitTenderChargeParams: SimulateSplitTenderChargeParams = {
 };
 
 const lightrailShare = 450;
+const lightrailShareForNSF = 10000000;
 
 describe("stripeLightrailSplitTenderTransactions", () => {
     before(() => {
@@ -143,6 +147,21 @@ describe("stripeLightrailSplitTenderTransactions", () => {
                 const res = await lightrailSplitTender.simulateSplitTenderCharge(simulateSplitTenderChargeParams, lightrailShare);
                 chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
                 chai.assert.equal(res.lightrailTransaction.userSuppliedId, simulateSplitTenderChargeParams.userSuppliedId);
+            });
+
+            it("simulates posting a charge to Lightrail: nsf false", async () => {
+                simulateSplitTenderChargeParams.userSuppliedId = uuid();
+                simulateSplitTenderChargeParams.nsf = false;
+                simulateSplitTenderChargeParams.amount = lightrailShareForNSF;
+                const res = await lightrailSplitTender.simulateSplitTenderCharge(simulateSplitTenderChargeParams, lightrailShareForNSF);
+                chai.assert.exists(res.lightrailTransaction.value);
+            });
+
+            it("simulates posting a charge to Lightrail: nsf true", async () => {
+                simulateSplitTenderChargeParams.userSuppliedId = uuid();
+                simulateSplitTenderChargeParams.nsf = true;
+                simulateSplitTenderChargeParams.amount = lightrailShareForNSF;
+                await chai.assert.isRejected(lightrailSplitTender.simulateSplitTenderCharge(simulateSplitTenderChargeParams, lightrailShareForNSF));
             });
         });
     });

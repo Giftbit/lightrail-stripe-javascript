@@ -1,6 +1,6 @@
 {
   "name": "lightrail-stripe",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A Javascript and Typescript library for creating Lightrail-Stripe integrated applications.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -30,10 +30,12 @@
   },
   "devDependencies": {
     "@types/chai": "^4.0.4",
+    "@types/chai-as-promised": "^7.1.0",
     "@types/mocha": "^2.2.44",
     "@types/superagent": "^3.5.6",
     "@types/typescript": "^2.0.0",
     "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "dotenv": "^4.0.0",
     "rimraf": "^2.6.2",
     "ts-node": "^3.3.0",

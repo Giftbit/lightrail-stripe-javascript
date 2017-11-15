@@ -2,9 +2,9 @@ import * as lightrail from "lightrail-client";
 
 import {StripeLightrailSplitTenderCharge} from "./params/StripeLightrailSplitTenderCharge";
 import {CreateSplitTenderChargeParams} from "./params/CreateSplitTenderChargeParams";
-import {CreateTransactionParams} from "lightrail-client/dist/params";
 import {Transaction} from "lightrail-client/dist/model";
 import {SimulateSplitTenderChargeParams} from "./params/SimulateSplitTenderChargeParams";
+import {CreateTransactionParams, SimulateTransactionParams} from "lightrail-client/dist/params";
 
 interface StripeParams {
     currency: string;
@@ -33,10 +33,11 @@ export async function simulateSplitTenderCharge(params: SimulateSplitTenderCharg
         if (!card) {
             throw new Error(`No ${params.currency} card found for shopperId '${params.shopperId}'.`);
         }
-        let lightrailTransactionParameters: CreateTransactionParams = {
+        let lightrailTransactionParameters: SimulateTransactionParams = {
             value: 0 - lightrailShare,
             currency: params.currency,
             userSuppliedId: params.userSuppliedId,
+            nsf: params.nsf,
         };
         lightrailTransactionParameters.metadata = appendSplitTenderMetadataForLightrail(params, null);
 
