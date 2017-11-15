@@ -41,7 +41,7 @@
     "typescript-eslint-parser": "^8.0.1"
   },
   "dependencies": {
-    "lightrail-client": "0.0.9",
+    "lightrail-client": "1.1.2",
     "stripe": "^5.3.0",
     "uuid": "^3.1.0"
   }
