@@ -4,6 +4,7 @@ import {StripeLightrailSplitTenderCharge} from "./model/StripeLightrailSplitTend
 import {CreateSplitTenderChargeParams} from "./model/CreateSplitTenderChargeParams";
 import {CreateTransactionParams} from "lightrail-client/dist/params";
 import {Transaction} from "lightrail-client/dist/model";
+import {SimulateSplitTenderChargeParams} from "./model/SimulateSplitTenderChargeParams";
 
 interface StripeParams {
     currency: string;
@@ -14,6 +15,38 @@ interface StripeParams {
     metadata?: { [propertyName: string]: any; };
 }
 
+export async function simulateSplitTenderCharge(params: SimulateSplitTenderChargeParams, lightrailShare: number): Promise<StripeLightrailSplitTenderCharge> {
+    if (!params) {
+        throw new Error("params not set");
+    } else if (!params.userSuppliedId) {
+        throw new Error("params.userSuppliedId not set");
+    }
+
+    let splitTenderSimulation: StripeLightrailSplitTenderCharge = {
+        lightrailTransaction: null,
+        stripeCharge: null
+    };
+
+    if (lightrailShare > 0) {
+        const contact = await lightrail.contacts.getContactByUserSuppliedId(params.shopperId);
+        const card = await lightrail.cards.getAccountCardByContactAndCurrency(contact, params.currency);
+        if (!card) {
+            throw new Error(`No ${params.currency} card found for shopperId '${params.shopperId}'.`);
+        }
+        let lightrailTransactionParameters: CreateTransactionParams = {
+            value: 0 - lightrailShare,
+            currency: params.currency,
+            userSuppliedId: params.userSuppliedId,
+        };
+        lightrailTransactionParameters.metadata = appendSplitTenderMetadataForLightrail(params, null);
+
+        const lightrailSimulatedTransaction =
+            await lightrail.cards.transactions.simulateTransaction(card, lightrailTransactionParameters);
+        splitTenderSimulation.lightrailTransaction = lightrailSimulatedTransaction;
+    }
+
+    return splitTenderSimulation;
+}
 export async function createSplitTenderCharge(params: CreateSplitTenderChargeParams, lightrailShare: number, stripeParam: object | string): Promise<StripeLightrailSplitTenderCharge> {
     if (!params) {
         throw new Error("params not set");
