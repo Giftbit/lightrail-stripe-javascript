@@ -1,6 +1,6 @@
 {
   "name": "lightrail-stripe",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Javascript and Typescript library for creating Lightrail-Stripe integrated applications.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

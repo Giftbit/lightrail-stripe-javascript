@@ -21,7 +21,7 @@ Before using this library, you'll need to configure the Lightrail Client to use 
 ```javascript
 const Lightrail = require('lightrail');
 Lightrail.configure({
-  apiKey: <LIGHTRAIL API KEY>
+  apiKey: "a23rtshs4.a245ty56j5st.90ejsirgormt"
 })
 ```
 
@@ -95,65 +95,65 @@ LightrailStripe.createSplitTenderCharge(
 The return object will have a `lightrailTransaction` and a `stripeCharge` containing details of their respective transactions (output simplified for ease of reading): 
 
 ```json
-{ lightrailTransaction:
-   { value: -6200,
-     userSuppliedId: 'order-s3xx30-capture',
-     dateCreated: '2017-11-14T23:59:58.150Z',
-     transactionType: 'DRAWDOWN',
-     cardId: 'card-c99f0cdf9',
-     currency: 'USD',
-     transactionBreakdown: [ [Object] ],
-     transactionId: 'transaction-89e0a',
-     parentTransactionId: 'transaction-372e2',
-     metadata:
-      { cart: {
-          total: 6960,
-          items: [ {
-                    id: "B009L1MF7A",
-                    quantity: 3,
-                    unit_price: 2320,
-                    tags: ["apparel", "outdoor"]
+{ "lightrailTransaction":
+   { "value": -6200,
+     "userSuppliedId": "order-s3xx30-capture",
+     "dateCreated": "2017-11-14T23:59:58.150Z",
+     "transactionType": "DRAWDOWN",
+     "cardId": "card-c99f0cdf9",
+     "currency": "USD",
+     "transactionBreakdown": {},
+     "transactionId": "transaction-89e0a",
+     "parentTransactionId": "transaction-372e2",
+     "metadata":
+      { "cart": {
+          "total": 6960,
+          "items": [ {
+                    "id": "B009L1MF7A",
+                    "quantity": 3,
+                    "unit_price": 2320,
+                    "tags": ["apparel", "outdoor"]
                   } ]
        },
-      _split_tender_total: 6960,
-      giftbit_initial_transaction_id: 'transaction-372e2',
-      _split_tender_partner: 'STRIPE',
-      _split_tender_partner_transaction_id: 'ch_1BOEJt' } },
-  stripeCharge:
-   { id: 'ch_1BOEJt',
-     object: 'charge',
-     amount: 760,
-     balance_transaction: 'txn_1BOEJtE2',
-     captured: true,
-     created: 1510703997,
-     currency: 'usd',
-     metadata:
-      { cart: {
-          total: 6960,
-          items: [ {
-                     id: "B009L1MF7A",
-                     quantity: 3,
-                     unit_price: 2320,
-                     tags: ["apparel", "outdoor"]
+      "_split_tender_total": 6960,
+      "giftbit_initial_transaction_id": "transaction-372e2",
+      "_split_tender_partner": "STRIPE",
+      "_split_tender_partner_transaction_id": "ch_1BOEJt" } },
+  "stripeCharge":
+   { "id": "ch_1BOEJt",
+     "object": "charge",
+     "amount": 760,
+     "balance_transaction": "txn_1BOEJtE2",
+     "captured": true,
+     "created": 1510703997,
+     "currency": "usd",
+     "metadata":
+      { "cart": {
+          "total": 6960,
+          "items": [ {
+                     "id": "B009L1MF7A",
+                     "quantity": 3,
+                     "unit_price": 2320,
+                     "tags": ["apparel", "outdoor"]
                    } ]
         },
-       _split_tender_total: '6960',
-       _split_tender_partner: 'LIGHTRAIL',
-       _split_tender_partner_transaction_id: 'transaction-89e0a' },
-     outcome:
-      { network_status: 'approved_by_network',
-        reason: null,
-        risk_level: 'normal',
-        seller_message: 'Payment complete.',
-        type: 'authorized' },
-     paid: true,
-     source:
-      { id: 'card_1BOEJtE2wGcUjQW3iH0pk4Xf',
-        object: 'card',
-        brand: 'Visa',
-        country: 'US',
-        last4: '4242' },
-     status: 'succeeded' } }
+       "_split_tender_total": "6960",
+       "_split_tender_partner": "LIGHTRAIL",
+       "_split_tender_partner_transaction_id": "transaction-89e0a" },
+     "outcome":
+      { "network_status": "approved_by_network",
+        "reason": null,
+        "risk_level": "normal",
+        "seller_message": "Payment complete.",
+        "type": "authorized" },
+     "paid": true,
+     "source":
+      { "id": "card_1BOEJtE2wGcUjQW3iH0pk4Xf",
+        "object": "card",
+        "brand": "Visa",
+        "country": "US",
+        "last4": "4242" },
+     "status": "succeeded" } }
 ```
 
 Note that metadata items have been added to both transactions to ensure transaction traceability. 
