@@ -2,7 +2,6 @@
   "name": "lightrail-stripe",
   "version": "0.0.1",
   "description": "A Javascript and Typescript library for creating Lightrail-Stripe integrated applications.",
-  "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -22,7 +21,8 @@
     "account credit"
   ],
   "contributors": [
-    "Mohammad Jafari <jafarim@gmail.com> (https://github.com/mojitoholic/)"
+    "Mohammad Jafari <jafarim@gmail.com> (https://github.com/mojitoholic/)",
+    "Tana Jukes <tana.jukes@gmail.com> (https://github.com/tjukes/)"
   ],
   "license": "MIT",
   "bugs": {
@@ -35,7 +35,9 @@
     "@types/typescript": "^2.0.0",
     "chai": "^4.1.2",
     "dotenv": "^4.0.0",
+    "rimraf": "^2.6.2",
     "ts-node": "^3.3.0",
+    "tslint": "^5.8.0",
     "typescript-eslint-parser": "^8.0.1"
   },
   "dependencies": {

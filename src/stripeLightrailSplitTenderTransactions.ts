@@ -88,8 +88,8 @@ function splitTenderParamsToStripeParams(splitTenderParams: CreateSplitTenderCha
     } as StripeParams;
 
     paramsForStripe.metadata._split_tender_total = paramsForStripe.amount;
-    paramsForStripe.metadata._split_tender_partner = 'LIGHTRAIL';
-    paramsForStripe.metadata._split_tender_partner_transaction_id = '';
+    paramsForStripe.metadata._split_tender_partner = "LIGHTRAIL";
+    paramsForStripe.metadata._split_tender_partner_transaction_id = "";
     if (lightrailTransaction && lightrailTransaction.transactionId) {
         paramsForStripe.metadata._split_tender_partner_transaction_id = lightrailTransaction.transactionId;
     }
@@ -104,7 +104,7 @@ function appendSplitTenderMetadataForLightrail(splitTenderParams: CreateSplitTen
         splitTenderParams.metadata = {};
     }
     splitTenderParams.metadata._split_tender_total = splitTenderParams.amount;
-    splitTenderParams.metadata._split_tender_partner = 'STRIPE';
+    splitTenderParams.metadata._split_tender_partner = "STRIPE";
     if (stripeTransaction) {
         splitTenderParams.metadata._split_tender_partner_transaction_id = stripeTransaction.id;
     }
@@ -115,9 +115,9 @@ function appendSplitTenderMetadataForLightrail(splitTenderParams: CreateSplitTen
 function getStripeObject(stripeParam: object | string) {
     if (!stripeParam) {
         throw new Error("stripeParam not set");
-    } else if (typeof stripeParam === 'object') {
+    } else if (typeof stripeParam === "object") {
         return stripeParam;
-    } else if (typeof stripeParam === 'string') {
+    } else if (typeof stripeParam === "string") {
         return require("stripe")(stripeParam);
     }
 }
