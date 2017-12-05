@@ -175,7 +175,7 @@ describe("stripeLightrailSplitTenderTransactions", () => {
                 chai.assert.exists(res.lightrailTransaction.value);
             });
 
-            it("simulates posting a charge to Lightrail: nsf true", async () => {
+            it("simulates posting a charge to Lightrail: nsf true (promise rejects if card can't cover charge)", async () => {
                 simulateSplitTenderChargeParams.userSuppliedId = uuid();
                 simulateSplitTenderChargeParams.nsf = true;
                 simulateSplitTenderChargeParams.amount = lightrailShareForNSF;
