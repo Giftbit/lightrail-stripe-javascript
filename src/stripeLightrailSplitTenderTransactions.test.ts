@@ -110,15 +110,6 @@ describe("stripeLightrailSplitTenderTransactions", () => {
                 const res = await lightrailSplitTender.createSplitTenderCharge(stripeOnlyParams, 0, stripe);
                 chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount);
             });
-
-            describe("error handling", () => {
-                it("re-throws a Stripe error (bad Stripe object)", async () => {
-                    const badStripe = require("stripe")("abc");
-                    splitTenderChargeParams.userSuppliedId = uuid();
-                    chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(splitTenderChargeParams, 1, badStripe));
-                });
-            });
-
         });
 
         describe("using Stripe secret key", () => {
@@ -147,15 +138,35 @@ describe("stripeLightrailSplitTenderTransactions", () => {
                 chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount);
             });
 
-            describe("error handling", () => {
-                it("re-throws a Stripe error (bad Stripe API key)", async () => {
-                    const badStripeKey = "abc";
-                    splitTenderChargeParams.userSuppliedId = uuid();
-                    chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(splitTenderChargeParams, 1, badStripeKey));
-                });
+        });
+
+        describe("error handling", () => {
+            it("re-throws a Stripe error (bad Stripe object)", async () => {
+                const badStripe = require("stripe")("abc");
+                splitTenderChargeParams.userSuppliedId = uuid();
+                chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(splitTenderChargeParams, 1, badStripe));
             });
 
+            it("re-throws a Stripe error (bad Stripe API key)", async () => {
+                const badStripeKey = "abc";
+                splitTenderChargeParams.userSuppliedId = uuid();
+                chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(splitTenderChargeParams, 1, badStripeKey));
+            });
+
+            it("re-throws a Lightrail error (pending phase)", async () => {
+                const badParams = {
+                    userSuppliedId: uuid(),
+                    currency: "USD",
+                    amount: 1000,
+                    shopperId: "bad-shopper",
+                    source: stripeTestToken
+                };
+                chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(badParams, 1, stripe));
+            });
+
+            // it("re-throws a Lightrail error (capture phase)");         // requires stubbing a method: implement when tests are set up for this
         });
+
     });
 
     describe("simulateSplitTenderCharge()", () => {
