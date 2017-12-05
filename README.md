@@ -4,10 +4,6 @@ Lightrail is a modern platform for digital account credits, gift cards, promotio
 
 If you are looking for specific use-cases or other languages, check out the *Integrations* section of the [Lightrail API documentation](https://www.lightrail.com/docs/).
 
-## Important
-
-This library is in _beta_ mode and may have breaking changes before v1.0.0.
-
 ## Features
 
 - Simple order checkout supporting split-tender transactions with Lightrail redemption alongside a Stripe payment.
