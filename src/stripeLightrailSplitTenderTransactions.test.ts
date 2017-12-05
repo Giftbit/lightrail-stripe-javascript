@@ -110,6 +110,15 @@ describe("stripeLightrailSplitTenderTransactions", () => {
                 const res = await lightrailSplitTender.createSplitTenderCharge(stripeOnlyParams, 0, stripe);
                 chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount);
             });
+
+            describe("error handling", () => {
+                it("re-throws a Stripe error (bad Stripe object)", async () => {
+                    const badStripe = require("stripe")("abc");
+                    splitTenderChargeParams.userSuppliedId = uuid();
+                    chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(splitTenderChargeParams, 1, badStripe));
+                });
+            });
+
         });
 
         describe("using Stripe secret key", () => {
@@ -137,6 +146,15 @@ describe("stripeLightrailSplitTenderTransactions", () => {
                 const res = await lightrailSplitTender.createSplitTenderCharge(stripeOnlyParams, 0, stripeAPIKey);
                 chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount);
             });
+
+            describe("error handling", () => {
+                it("re-throws a Stripe error (bad Stripe API key)", async () => {
+                    const badStripeKey = "abc";
+                    splitTenderChargeParams.userSuppliedId = uuid();
+                    chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(splitTenderChargeParams, 1, badStripeKey));
+                });
+            });
+
         });
     });
 
