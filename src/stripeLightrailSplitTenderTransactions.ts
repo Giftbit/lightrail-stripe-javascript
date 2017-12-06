@@ -100,6 +100,7 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
                         userSuppliedId: params.userSuppliedId + "-void",
                         metadata: appendSplitTenderMetadataForLightrail(params, splitTenderCharge.stripeCharge),
                     });
+                throw error;
             }
         }
     } else {
