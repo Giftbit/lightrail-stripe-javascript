@@ -64,6 +64,10 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
     const stripeShare = params.amount - lightrailShare;
 
     if (lightrailShare > 0) {
+        if (lightrailShare > params.amount) {
+            throw new Error("Lightrail share greater than total transaction amount.");
+        }
+
         const contact = await lightrail.contacts.getContactByUserSuppliedId(params.shopperId);
         const card = await lightrail.cards.getAccountCardByContactAndCurrency(contact, params.currency);
         if (!card) {

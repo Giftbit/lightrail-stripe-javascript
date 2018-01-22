@@ -165,6 +165,17 @@ describe("stripeLightrailSplitTenderTransactions", () => {
             });
 
             // it("re-throws a Lightrail error (capture phase)");         // requires stubbing a method: implement when tests are set up for this
+
+            it("throws an error when Lightrail share set to more than total transaction amount", async () => {
+                const badParams = {
+                    userSuppliedId: uuid(),
+                    currency: "USD",
+                    amount: 50,
+                    shopperId: lightrailShopperId,
+                    source: stripeTestToken
+                };
+                chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(badParams, 51, stripe), "Lightrail share greater than total transaction amount.");
+            });
         });
 
     });
