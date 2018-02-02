@@ -20,6 +20,12 @@ export async function simulateSplitTenderCharge(params: SimulateSplitTenderCharg
         throw new Error("params not set");
     } else if (!params.userSuppliedId) {
         throw new Error("params.userSuppliedId not set");
+    } else if (params.amount <= 0) {
+        throw new Error("params.amount must be > 0");
+    } else if (lightrailShare < 0) {
+        throw new Error("lightrailShare must be >= 0");
+    } else if (lightrailShare > params.amount) {
+        throw new Error("lightrailShare must <= params.amount");
     }
 
     let splitTenderSimulation: StripeLightrailSplitTenderCharge = {
@@ -53,6 +59,12 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
         throw new Error("params not set");
     } else if (!params.userSuppliedId) {
         throw new Error("params.userSuppliedId not set");
+    } else if (params.amount <= 0) {
+        throw new Error("params.amount must be > 0");
+    } else if (lightrailShare < 0) {
+        throw new Error("lightrailShare must be >= 0");
+    } else if (lightrailShare > params.amount) {
+        throw new Error("lightrailShare must <= params.amount");
     }
 
     const stripeObject = getStripeObject(stripeParam);
@@ -64,10 +76,6 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
     const stripeShare = params.amount - lightrailShare;
 
     if (lightrailShare > 0) {
-        if (lightrailShare > params.amount) {
-            throw new Error("Lightrail share greater than total transaction amount.");
-        }
-
         const contact = await lightrail.contacts.getContactByUserSuppliedId(params.shopperId);
         const card = await lightrail.cards.getAccountCardByContactAndCurrency(contact, params.currency);
         if (!card) {
@@ -121,19 +129,15 @@ export async function createSplitTenderCharge(params: CreateSplitTenderChargePar
 function splitTenderParamsToStripeParams(splitTenderParams: CreateSplitTenderChargeParams, stripeAmount: number, lightrailTransaction: Transaction): StripeParams {
     let paramsForStripe = {
         ...splitTenderParams,
+        amount: stripeAmount,
         metadata: splitTenderParams.metadata || {},
         shopperId: undefined,
         userSuppliedId: undefined
     } as StripeParams;
 
-    paramsForStripe.metadata._split_tender_total = paramsForStripe.amount;
+    paramsForStripe.metadata._split_tender_total = splitTenderParams.amount;
     paramsForStripe.metadata._split_tender_partner = "LIGHTRAIL";
-    paramsForStripe.metadata._split_tender_partner_transaction_id = "";
-    if (lightrailTransaction && lightrailTransaction.transactionId) {
-        paramsForStripe.metadata._split_tender_partner_transaction_id = lightrailTransaction.transactionId;
-    }
-
-    paramsForStripe.amount = stripeAmount;
+    paramsForStripe.metadata._split_tender_partner_transaction_id = (lightrailTransaction && lightrailTransaction.transactionId) || "";
 
     return paramsForStripe;
 }
