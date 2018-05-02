@@ -1,5 +1,4 @@
 import * as lightrail from "lightrail-client";
-
 import {StripeLightrailSplitTenderCharge, CreateSplitTenderChargeParams, SimulateSplitTenderChargeParams} from "./params";
 import {Transaction} from "lightrail-client/dist/model";
 import {CreateTransactionParams, SimulateTransactionParams} from "lightrail-client/dist/params";

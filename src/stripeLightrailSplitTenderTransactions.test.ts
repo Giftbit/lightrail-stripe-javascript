@@ -174,6 +174,17 @@ describe("stripeLightrailSplitTenderTransactions", () => {
                 };
                 await chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(badParams, 51, stripe), "lightrailShare must <= params.amount");
             });
+
+            it("throws an Error when the Stripe share is too small", async () => {
+                const badParams: CreateSplitTenderChargeParams = {
+                    userSuppliedId: uuid(),
+                    currency: "USD",
+                    amount: 425,
+                    shopperId: lightrailShopperId,
+                    source: stripeTestToken
+                };
+                await chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(badParams, 450, stripe), /Amount must convert to at least 50 cents./);
+            });
         });
     });
 
