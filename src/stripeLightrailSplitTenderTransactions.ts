@@ -1,9 +1,7 @@
 import * as lightrail from "lightrail-client";
 
-import {StripeLightrailSplitTenderCharge} from "./params/StripeLightrailSplitTenderCharge";
-import {CreateSplitTenderChargeParams} from "./params/CreateSplitTenderChargeParams";
+import {StripeLightrailSplitTenderCharge, CreateSplitTenderChargeParams, SimulateSplitTenderChargeParams} from "./params";
 import {Transaction} from "lightrail-client/dist/model";
-import {SimulateSplitTenderChargeParams} from "./params/SimulateSplitTenderChargeParams";
 import {CreateTransactionParams, SimulateTransactionParams} from "lightrail-client/dist/params";
 
 interface StripeParams {
@@ -47,9 +45,7 @@ export async function simulateSplitTenderCharge(params: SimulateSplitTenderCharg
         };
         lightrailTransactionParameters.metadata = appendSplitTenderMetadataForLightrail(params, null);
 
-        const lightrailSimulatedTransaction =
-            await lightrail.cards.transactions.simulateTransaction(card, lightrailTransactionParameters);
-        splitTenderSimulation.lightrailTransaction = lightrailSimulatedTransaction;
+        splitTenderSimulation.lightrailTransaction = await lightrail.cards.transactions.simulateTransaction(card, lightrailTransactionParameters);
     }
 
     return splitTenderSimulation;

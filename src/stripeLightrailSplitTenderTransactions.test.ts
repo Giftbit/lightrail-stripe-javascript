@@ -6,8 +6,7 @@ import {v4 as uuid} from "uuid";
 import * as lightrailSplitTender from "./stripeLightrailSplitTenderTransactions";
 import {CreateTransactionParams} from "lightrail-client/dist/params";
 import {Card, Contact} from "lightrail-client/dist/model";
-import {CreateSplitTenderChargeParams} from "./params/CreateSplitTenderChargeParams";
-import {SimulateSplitTenderChargeParams} from "./params/SimulateSplitTenderChargeParams";
+import {CreateSplitTenderChargeParams, SimulateSplitTenderChargeParams} from "./params";
 
 chai.use(chaiAsPromised);
 
@@ -21,7 +20,7 @@ const stripe = require("stripe")(
 );
 
 const splitTenderChargeParams: CreateSplitTenderChargeParams = {
-    userSuppliedId: "",  //uuid must be generated in each test that uses this to avoid conflicts
+    userSuppliedId: "",  // uuid must be generated in each test that uses this to avoid conflicts
     currency: "USD",
     amount: 1000,
     shopperId: lightrailShopperId,
@@ -29,7 +28,7 @@ const splitTenderChargeParams: CreateSplitTenderChargeParams = {
 };
 
 const splitTenderChargeParamsWithMetadata: CreateSplitTenderChargeParams = {
-    userSuppliedId: "",  //uuid must be generated in each test that uses this to avoid conflicts
+    userSuppliedId: "",  // uuid must be generated in each test that uses this to avoid conflicts
     currency: "USD",
     amount: 1000,
     shopperId: lightrailShopperId,
@@ -52,7 +51,7 @@ const stripeOnlyParams: CreateSplitTenderChargeParams = {
 };
 
 const simulateSplitTenderChargeParams: SimulateSplitTenderChargeParams = {
-    userSuppliedId: "",  //uuid must be generated in each test that uses this to avoid conflicts
+    userSuppliedId: "",  // uuid must be generated in each test that uses this to avoid conflicts
     currency: "USD",
     amount: 1000,
     shopperId: lightrailShopperId,
@@ -70,7 +69,7 @@ describe("stripeLightrailSplitTenderTransactions", () => {
     });
 
     afterEach(() => {
-        //return the funds back to the card so that we can redo the test
+        // return the funds back to the card so that we can redo the test
         const lightrailTransactionParameters: CreateTransactionParams = {
             value: lightrailShare,
             currency: splitTenderChargeParams.currency,
@@ -100,7 +99,7 @@ describe("stripeLightrailSplitTenderTransactions", () => {
             });
 
             it("posts a charge to Lightrail only", async () => {
-                //todo: balance check the card and adjust the amount of the transaction to be less than that to make this test repeatable.
+                // todo: balance check the card and adjust the amount of the transaction to be less than that to make this test repeatable.
                 const res = await lightrailSplitTender.createSplitTenderCharge(lightrailOnlyParams, lightrailShare, stripe);
                 chai.assert.equal(res.lightrailTransaction.value, 0 - lightrailShare);
                 chai.assert.equal(res.lightrailTransaction.userSuppliedId, lightrailOnlyParams.userSuppliedId);
@@ -137,7 +136,6 @@ describe("stripeLightrailSplitTenderTransactions", () => {
                 const res = await lightrailSplitTender.createSplitTenderCharge(stripeOnlyParams, 0, stripeAPIKey);
                 chai.assert.equal(res.stripeCharge.amount, stripeOnlyParams.amount);
             });
-
         });
 
         describe("error handling", () => {
@@ -174,10 +172,9 @@ describe("stripeLightrailSplitTenderTransactions", () => {
                     shopperId: lightrailShopperId,
                     source: stripeTestToken
                 };
-                chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(badParams, 51, stripe), "Lightrail share greater than total transaction amount.");
+                await chai.assert.isRejected(lightrailSplitTender.createSplitTenderCharge(badParams, 51, stripe), "lightrailShare must <= params.amount");
             });
         });
-
     });
 
     describe("simulateSplitTenderCharge()", () => {
